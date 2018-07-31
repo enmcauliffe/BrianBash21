@@ -8,8 +8,10 @@
 
 import UIKit
 
-class ThirdViewController: UIViewController {
+class ThirdViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+    var card = ["Hello", "Hello", "Hello", "Hello", "Hello"]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -19,6 +21,17 @@ class ThirdViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return card.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cardCell", for: indexPath)
+        cell.textLabel?.text = "Name poop"
+        cell.detailTextLabel?.text = "Some kind of text Some kind of text Some kind of text Some kind of text Some kind of text Some kind of text Some kind of text Some kind of text  Some kind of text Some kind of text Some kind of text Some kind of text Some kind of text Some kind of text Some kind of text Some kind of text"
+        return cell
     }
     
 
