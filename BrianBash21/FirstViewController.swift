@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import EventKit
 
 class FirstViewController: UIViewController {
 
@@ -73,6 +74,69 @@ class FirstViewController: UIViewController {
         minutesLabel.text = "\(String(describing: minutesLeft)) MINUTES"
         secondsLabel.text = "\(String(describing: secondsLeft)) SECONDS"
         
+    }
+    
+    @IBAction func addToCalendarPressed(_ sender: Any) {
+        //let eventStore = EKEventStore();
+        
+        let competitionDate = NSDateComponents()
+        competitionDate.year = 2019
+        competitionDate.month = 2
+        competitionDate.day = 18
+        competitionDate.hour = 23
+        competitionDate.minute = 59
+        let endBday  = Calendar.current.date(from: competitionDate as DateComponents)!
+        
+        
+        // Use Event Store to create a new calendar instance
+        let eventStore: EKEventStore = EKEventStore()
+        
+        switch EKEventStore.authorizationStatus(for: .event) {
+        case .authorized:
+            print("authorized")
+        case .restricted, .denied:
+            print("not given")
+        case .notDetermined:
+            eventStore.requestAccess(to: .event, completion: {(isAllowed, error) in
+                if let error = error {
+                    print(error.localizedDescription)
+                } else {
+                    if isAllowed {
+                        print("poop")
+                    }
+                }
+            })
+            
+        }
+        
+        eventStore.requestAccess(to: .event, completion: { (granted, error) in
+            if (granted) && (error == nil){
+                print("granted \(granted)")
+                print("error \(String(describing: error))")
+                DispatchQueue.main.async {
+                    let event:EKEvent = EKEvent(eventStore: eventStore)
+                    event.title = "Brians 21st!"
+                    event.startDate = self.bBday
+                    event.endDate = endBday
+                    event.calendar = eventStore.defaultCalendarForNewEvents
+                    
+                    do{
+                        try eventStore.save(event, span: .thisEvent)
+                        self.navigationController?.popViewController(animated: true)
+                        self.dismiss(animated: true, completion: nil)
+                        
+                    }catch{
+                        let alert = UIAlertController(title: "Event could not save", message: (error as NSError).localizedDescription, preferredStyle: .alert)
+                        let OKAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                        alert.addAction(OKAction)
+                        
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                }
+            } else {
+                print("No access")
+            }
+        })
     }
     
 }
